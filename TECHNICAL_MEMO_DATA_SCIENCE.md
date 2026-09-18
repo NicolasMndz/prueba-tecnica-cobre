@@ -17,8 +17,8 @@ Cobre opera infraestructura de pagos masivos B2B y dispersión interbancaria sob
 * **Plazos y Latencia Bancaria (*Settlement Lag $T+L$*):** La compensación interbancaria es asíncrona. Mientras rieles inmediatos locales operan con $L=0$ días hábiles (e.g., SPEI en México), las transferencias internacionales o cuentas con corte ACH operan con $L=1$ día hábil. Si tesorería reacciona cuando el saldo ya rompió el piso, la inyección de fondos llega $L$ días tarde, cuando el incumplimiento ya se consumó.
 
 ### 1.3 Cuentas Fuente vs. Cuentas Receptoras
-* **Cuentas Fuente (Donantes / Matriz):** Entidades como `ACC-001` (Bancolombia, COP). Concentran el patrimonio principal y la mayor tasa de remuneración de float. Su función es respaldar la operación regional mediante fondeos programados, sujeta a una regla dura de no descapitalización.
-* **Cuentas Receptoras (Operativas / Dispersión):** Entidades como `ACC-002` (Chase Bank, USD, umbral $100k) y `ACC-004` (BBVA, MXN, umbral $40M). Cuentas de paso con alto volumen de egresos comerciales inmediatos, donde la falta de saldo detiene la operación de los clientes de Cobre.
+* **Cuentas Fuente (Donantes / Matriz):** Entidades como `ACC-001` (Banco Aurora, COP). Concentran el patrimonio principal y la mayor tasa de remuneración de float. Su función es respaldar la operación regional mediante fondeos programados, sujeta a una regla dura de no descapitalización.
+* **Cuentas Receptoras (Operativas / Dispersión):** Entidades como `ACC-002` (Banco Aurora, USD, umbral $100k) y `ACC-004` (Banco Azteca+, MXN, umbral $40M). Cuentas de paso con alto volumen de egresos comerciales inmediatos, donde la falta de saldo detiene la operación de los clientes de Cobre.
 
 ### 1.4 Preguntas Clave a Resolver por el Motor
 1. **¿Cuándo transferir?** Detección anticipada de la necesidad de liquidez considerando la latencia $L$, antes de que el saldo perfore el umbral de seguridad.
@@ -169,7 +169,7 @@ La selección de la cuenta donante no es una decisión aislada; sigue una **Pol�
    La cascada opera dentro del mismo código de moneda (COP con COP, USD con USD, MXN con MXN). Se prohíbe el fondeo cruzado automático entre diferentes divisas en el motor ordinario de tesorería, evitando incurrir en comisiones ocultas de compra/venta de divisas y pérdidas por spread cambiario.
 
 3. **Restricción Dura de Solvencia del Donante (Inviolabilidad de la Reserva):**  
-   Para evitar la canibalización de la cuenta nodriza (el error del squad anterior que vació Bancolombia), cada cuenta donante tiene un piso mínimo protegido (`Floor_donor`):
+   Para evitar la canibalización de la cuenta nodriza (el error del squad anterior que vació Banco Aurora ACC-001), cada cuenta donante tiene un piso mínimo protegido (`Floor_donor`):
    $$\text{Monto Final} = \min\left(\text{Monto Requerido}, \;\; \max(0, \text{Balance}_{\text{donor}, t} - \text{Floor}_{\text{donor}})\right)$$
    * **Mecanismo de Desbordamiento:** Si la cuenta donante primaria no tiene saldo suficiente para cubrir el 100% de la necesidad sin romper su piso, transfiere únicamente su excedente seguro ($\text{Balance} - \text{Floor}$) y la cascada escala el saldo restante a la siguiente fuente de liquidez o emite una alerta prioritaria a la mesa de tesorería. Esto garantiza matemáticamente que salvar a una cuenta filial jamás descapitalice a la cuenta matriz.
 
@@ -229,7 +229,7 @@ Se contrastan tres filosofías de tesorería sobre los mismos 70 días de prueba
 | **Saldo Mínimo en USD (`ACC-002`)** | $56.0k USD (Quiebre) | $99.4k USD (Quiebre) | **$104.7k USD (+4.7% buffer)** | Cumplimiento estricto del umbral ($100k USD) durante todo el trimestre. |
 | **Saldo Mínimo en MXN (`ACC-004`)** | $15.4M MXN (Quiebre) | $39.98M MXN (Quiebre) | **$52.8M MXN (+32.0% buffer)** | Absorbió los picos de quincena sin perforar el umbral ($40M MXN). |
 | **Preservación del Float (COP)** | $124.5M COP float | $111.5M COP float | **$124.5M COP (+12.97M COP)** | Fondeo Just-in-Time maximiza saldos remunerados en la cuenta nodriza. |
-| **Descapitalización de Cuentas** | No aplica | Crítica (vació Bancolombia) | **0 eventos (Piso respetado)** | Protección patrimonial absoluta mediante la regla de solvencia. |
+| **Descapitalización de Cuentas** | No aplica | Crítica (vació Banco Aurora ACC-001) | **0 eventos (Piso respetado)** | Protección patrimonial absoluta mediante la regla de solvencia. |
 
 *Clarificación Técnica sobre la Solvencia del Float:* El prototipo anterior aparentaba tener menor uso de capital simplemente porque omitió fondear a `ACC-004` en México, manteniéndola en insolvencia técnica continua. El modelo propuesto resolvió la liquidez de todas las geografías y además superó al squad en +$12.97M COP en rendimiento promedio de float en Colombia, demostrando que la eficiencia de capital no riñe con la solvencia integral.
 

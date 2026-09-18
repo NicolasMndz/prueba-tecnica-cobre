@@ -25,6 +25,14 @@ archive/
 *.tmp
 ~$*
 presentacion_ejecutiva_tesoreria_actualizada.pptx
+# Defense Presentation (Local only - Do not push to GitHub)
+presentacion_sustentacion_technical_lead.pptx
+presentation_assets/slide_previews/
+presentation_assets/math_formulas/
+generate_defense_presentation.py
+generate_math_assets.py
+inject_speaker_notes.py
+GUION_SUSTENTACION_TECHNICAL_LEAD.md
 
 # OS Specific
 .DS_Store
