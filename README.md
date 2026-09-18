@@ -61,8 +61,8 @@ Todo el proyecto está diseñado para ejecutarse y verificarse de forma 100% rep
 
 ### Paso 1: Clonar el repositorio e instalar dependencias
 ```bash
-git clone <URL_DEL_REPOSITORIO>
-cd pruebatcnicacobretechnicalleaddatascience
+git clone https://github.com/NicolasMndz/prueba-tecnica-cobre.git
+cd prueba-tecnica-cobre
 pip install -r requirements.txt
 ```
 
