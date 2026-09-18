@@ -7,42 +7,29 @@
 
 ---
 
-## 1. Resumen Ejecutivo y Resultados de Negocio
+## 1. Mapeo Maestro: Partes de la Prueba Técnica vs. Archivos Entregables
 
-Este repositorio contiene la resolución técnica integral de la prueba para el rol de **Technical Lead Data Science** en Cobre. El objetivo es transformar una gestión de liquidez reactiva en un **motor predictivo y estocástico de optimización de transferencias multi-banco y multi-divisa (COP, USD, MXN)**.
+A continuación se detalla cómo se da cumplimiento riguroso a cada requerimiento de la prueba oficial de Cobre (`Candidate Test - Technical Lead DS (Liquidity) EN.pdf`) y con qué archivos específicos se responde cada parte:
 
-### Resultados Cuantitativos Clave (Evaluación en 70 Días Out-of-Sample):
-* **Cero Quiebres Operacionales (100.0% Cumplimiento de SLA):** Se eliminaron por completo los eventos de déficit de saldo en todas las cuentas operativas de dispersión (frente a 109 días de quiebre en inacción y 2 días en el modelo del squad).
-* **Reducción del 96.9% en Fricción Bancaria:** Se pasó de 97 transferencias caóticas y desordenadas (1.4 órdenes diarias del squad) a **únicamente 3 fondeos estratégicos amortiguados** (1 cada 23 días).
-* **Costo Transaccional Marginal:** El gasto total en comisiones bancarias durante todo el trimestre fue de solo **$50 USD** (2 transferencias internacionales SWIFT de $25 USD) y **$20 MXN** (1 transferencia local SPEI), erradicando el sangrado de tarifas y sobrecostos cambiarios.
-* **Solvencia Patrimonial Intacta:** La cuenta matriz donante (`ACC-001` Bancolombia en COP) mantuvo un saldo mínimo de **$1,942.0M COP (+94.2% sobre su piso de seguridad)** y generó **+$12.97M COP adicionales** en saldo promedio remunerado (*float*) frente al modelo previo.
-
----
-
-## 2. Mapeo Maestro: Partes de la Prueba Técnica vs. Archivos Entregables
-
-A continuación se detalla con precisión quirúrgica qué archivo da respuesta a cada parte del examen oficial de Cobre (`Candidate Test - Technical Lead DS (Liquidity) EN.pdf`):
-
-| Parte de la Prueba Técnica | Descripción del Requerimiento | Archivo(s) de Respuesta | Enfoque y Contenido Entregado |
+| Parte de la Prueba Técnica | Descripción del Requerimiento Oficial | Archivo(s) de Respuesta | Enfoque y Cómo se Cumple |
 | :--- | :--- | :--- | :--- |
-| **Parte 1: Diagnosticar y Corregir (Hands-on)** | Revisar el notebook inicial del squad, identificar fallas de datos y modelado, reconstruir el pipeline y explicar en lenguaje de negocio su impacto. | • [`clean_data_pipeline.py`](clean_data_pipeline.py)<br>• [`test_data_integrity.py`](test_data_integrity.py)<br>• [`flawed_model_squad_draft.ipynb`](flawed_model_squad_draft.ipynb)<br>• [`solution_notebook.ipynb`](solution_notebook.ipynb) (Sec. 1-2) | • **Auditoría Forense:** Descubrimiento del descarte del 18% de datos por fechas multiformato, error de escala decimal 10x ($400M vs $40M MXN) y 4 inversiones de signo.<br>• **Reconciliación Contable:** Pipeline determinístico que restaura la identidad contable física con residuo cero (`0.00`).<br>• **Suite de Calidad:** 6 pruebas automatizadas en `pytest` para certificar la integridad de datos antes de modelar. |
-| **Parte 2: Diseñar una Mejor Solución (Forecasting & Sizing)** | Diseñar un método sólido y explicable para decidir cuándo y cuánto mover capital, minimizando riesgo de déficit y costos de fricción bancaria. | • [`solution_notebook.ipynb`](solution_notebook.ipynb) (Sec. 3-5)<br>• [`run_backtest_simulation.py`](run_backtest_simulation.py)<br>• [`TECHNICAL_MEMO_DATA_SCIENCE.md`](TECHNICAL_MEMO_DATA_SCIENCE.md) (Sec. 4) | • **Física de Tanque vs. Caudal:** Abandono del pronóstico de saldos acumulativos $I(1)$ y adopción de Flujos Netos Diarios $I(0)$ con Ridge L2 y features de calendario B2B (quincenas, fines de mes, estacionalidad semanal).<br>• **Arquitectura en Dos Capas:** Separación del sensor predictivo (anticipa al lead time $T+L$ con 99% confianza) del amortiguador de fondeo (colchón de absorción para 14 días).<br>• **Regla de Solvencia:** Blindaje inviolable de la cuenta matriz (`ACC-001`) para evitar su descapitalización. |
-| **Parte 3: Explicar a Dos Públicos Objetivo** | Escribir dos explicaciones de la solución:<br>1. Técnica para el Data Scientist del Squad.<br>2. De negocio para el Comité de Tesorería / Finanzas (CFO). | • **Técnico:** [`TECHNICAL_MEMO_DATA_SCIENCE.md`](TECHNICAL_MEMO_DATA_SCIENCE.md)<br>• **Tesorería:** [`presentacion_ejecutiva_tesoreria.pptx`](presentacion_ejecutiva_tesoreria.pptx) | • **Para Data Science:** Documento técnico formal de 300+ líneas con rigor matemático, supuestos de estacionariedad, formulación de pérdidas, análisis de riesgo de cola y protocolo MLOps.<br>• **Para Tesorería:** Presentación ejecutiva en PowerPoint (11 slides widescreen 16:9), sin fórmulas complejas, con analogías intuitivas, tabla financiera maestra de 3 modelos y cero notas al orador (lista para lectura ejecutiva). |
-| **Parte 4: Formas de Trabajo con IA (Ways of Working)** | Transparentar dónde sí se usaron herramientas de IA (agentes, copilotos) y dónde deliberadamente NO se utilizaron. | • [`TECHNICAL_MEMO_DATA_SCIENCE.md`](TECHNICAL_MEMO_DATA_SCIENCE.md) (Sec. 7)<br>• [`presentacion_ejecutiva_tesoreria.pptx`](presentacion_ejecutiva_tesoreria.pptx) (Slide 10)<br>• [`solution_notebook.ipynb`](solution_notebook.ipynb) (Sec. 7) | • **Dónde SÍ IA (~60% ahorro en tiempo):** Scaffolding de tests en `pytest`, regex complejas de fechas, linters estáticos (PEP-8) y benchmarking de modelos $(s, S)$.<br>• **Dónde NO IA (Criterio Humano Irreemplazable):** Diagnóstico contable (la IA sugería imputar o descartar el 10x), causalidad temporal $T+L$, analogía tanque vs. caudal y diseño de los 4 Circuit Breakers. |
-| **Parte 5: Blueprint de Puesta en Producción** | Describir arquitectura de producción: pipeline de datos, orquestación, monitoreo y salvaguardas (circuit breakers). | • [`TECHNICAL_MEMO_DATA_SCIENCE.md`](TECHNICAL_MEMO_DATA_SCIENCE.md) (Sec. 6)<br>• [`presentacion_ejecutiva_tesoreria.pptx`](presentacion_ejecutiva_tesoreria.pptx) (Slide 09)<br>• [`solution_notebook.ipynb`](solution_notebook.ipynb) (Sec. 8) | • **Pipeline:** Extracción Snowflake $ightarrow$ Calidad `dbt` $ightarrow$ Endpoint Vertex AI.<br>• **Orquestación:** DAG diario en Apache Airflow a las 06:00 UTC (antes de apertura de rieles ACH 07:00 COT y SPEI 06:00 CDMX).<br>• **Monitoreo MLOps:** Tests de Kolmogorov-Smirnov y Population Stability Index (PSI < 0.10) para deriva de datos.<br>• **Salvaguardas:** 4 Circuit Breakers automáticos en código (Integridad Contable, Solvencia del Donante, Techo Diario de 15% y Aislamiento Cambiario). |
+| **Parte 1: Diagnosticar y Corregir (Hands-on Fix)** | Revisar el código inicial del squad, diagnosticar qué falló en los datos y el modelado, reconstruir el pipeline de curaduría y explicar el impacto en lenguaje de negocio. | • [`clean_data_pipeline.py`](clean_data_pipeline.py)<br>• [`test_data_integrity.py`](test_data_integrity.py)<br>• [`TECHNICAL_MEMO_DATA_SCIENCE.md`](TECHNICAL_MEMO_DATA_SCIENCE.md) (Sec. 2 y 3) | • **Auditoría Forense:** Detección de las 5 fallas críticas: descarte del 18.3% de datos por fechas multiformato (`YYYY-MM-DD`, `DD/MM/YYYY`, `MM-DD-YYYY`), 4 inversiones de signo (débitos como créditos), 3 errores de escala decimal 10x ($400M vs $40M MXN), ceguera de divisa al transferir y modelado de stock en vez de flujo.<br>• **Reconciliación Contable:** Pipeline determinístico que restaura la identidad física contable ($B_t = B_{t-1} + I_t - O_t$) con residuo mediano exactamente igual a `0.0000`, preservando el 100% de los registros (270 días continuos $\times$ 6 cuentas = 1,620 filas).<br>• **Suite de Calidad:** 6 pruebas automatizadas en `pytest` que certifican continuidad temporal, completitud sin nulos y límites físicos. |
+| **Parte 2: Diseñar una Mejor Solución (Forecasting & Sizing)** | Proponer un método sólido y explicable para predecir flujos y decidir cuándo y cuánto mover capital, minimizando riesgo de déficit y costos de fricción bancaria. | • [`run_backtest_simulation.py`](run_backtest_simulation.py)<br>• [`TECHNICAL_MEMO_DATA_SCIENCE.md`](TECHNICAL_MEMO_DATA_SCIENCE.md) (Sec. 4 y 5) | • **Física de Tanque vs. Caudal:** Transición del modelado de saldos integrados $I(1)$ al pronóstico de flujos netos diarios estacionarios $I(0)$ mediante regresión regularizada Ridge L2 ($\alpha=10.0$) con factores de calendario B2B (estacionalidad semanal, quincenas y fin de mes).<br>• **Motor Desacoplado en Dos Capas:** Separación del **Sensor Predictivo** (evalúa riesgo al lead time $T+L$ con 99% de confianza, $Z_\alpha=2.326$) del **Amortiguador de Fondeo** (dimensiona el target para garantizar 14 días de autonomía quincenal, $H=14$).<br>• **Regla de Solvencia Inviolable:** Blindaje del piso de reserva de la cuenta matriz (`ACC-001`) para erradicar su descapitalización. |
+| **Parte 3: Explicar a Dos Públicos Objetivo (Dual Audience)** | Entregar dos explicaciones de la solución adaptadas a sus audiencias:<br>1. Técnica para el Data Scientist del squad.<br>2. De negocio para el Comité de Tesorería / Finanzas (CFO). | • **Audiencia Técnica:** [`TECHNICAL_MEMO_DATA_SCIENCE.md`](TECHNICAL_MEMO_DATA_SCIENCE.md)<br>• **Audiencia Tesorería:** [`presentacion_ejecutiva_tesoreria.pptx`](presentacion_ejecutiva_tesoreria.pptx) | • **Para Data Science:** Documento técnico formal de 300+ líneas con rigor econométrico, supuestos de estacionariedad, formulación analítica de pérdidas, cuantificación de riesgo de cola, intervalos de confianza y protocolo MLOps.<br>• **Para Tesorería:** Presentación ejecutiva en PowerPoint (11 diapositivas panorámicas 16:9), sin fórmulas complejas, con analogías intuitivas (tanque vs. caudal), scorecard financiero comparativo de los 3 modelos (Inacción, Squad, Propuesto) y cero notas al orador (diseñada para lectura y decisión ejecutiva inmediata). |
+| **Parte 4: Formas de Trabajo con IA (Ways of Working)** | Transparentar dónde sí se usaron herramientas de IA (agentes, asistentes) y dónde deliberadamente NO se utilizaron, destacando el criterio del liderazgo humano. | • [`TECHNICAL_MEMO_DATA_SCIENCE.md`](TECHNICAL_MEMO_DATA_SCIENCE.md) (Sec. 7)<br>• [`presentacion_ejecutiva_tesoreria.pptx`](presentacion_ejecutiva_tesoreria.pptx) (Slide 10) | • **Dónde SÍ IA (~60% de ahorro de tiempo):** Scaffolding acelerado de pruebas unitarias en `pytest`, regex complejas para normalización multiformato de fechas, linters de código (PEP-8) y benchmarking de literatura sobre modelos $(s, S)$ de control de inventarios.<br>• **Dónde NO IA (Criterio Humano Irreemplazable):** Diagnóstico forense contable (la IA sugería imputar con la media o suavizar, lo que ocultaba el error 10x), causalidad temporal $T+L$ sin filtración de futuro (*zero lookahead bias*), desacoplamiento sensor vs. amortiguador y diseño de los 4 Circuit Breakers automáticos. |
+| **Parte 5: Blueprint de Puesta en Producción** | Describir arquitectura de producción: pipeline de datos, orquestación, monitoreo continuo y salvaguardas (circuit breakers). | • [`TECHNICAL_MEMO_DATA_SCIENCE.md`](TECHNICAL_MEMO_DATA_SCIENCE.md) (Sec. 6)<br>• [`presentacion_ejecutiva_tesoreria.pptx`](presentacion_ejecutiva_tesoreria.pptx) (Slide 09) | • **Pipeline & Calidad:** Ingesta Snowflake $\rightarrow$ Compuertas contables en `dbt` / Great Expectations $\rightarrow$ Microservicio de inferencia.<br>• **Orquestación:** DAG diario en Apache Airflow a las 06:00 UTC (antes de la apertura de rieles ACH 07:00 COT y SPEI 06:00 CDMX).<br>• **Monitoreo MLOps:** Pruebas Kolmogorov-Smirnov y Population Stability Index ($\text{PSI} < 0.10$) para detección de deriva de datos (*data drift*), y seguimiento de MAE diario frente a bandas de volatilidad.<br>• **4 Circuit Breakers en Código:** Integridad Contable Cero-Tolerancia, Solvencia Inviolable del Donante, Techo Diario del 15% de Activos Líquidos y Aislamiento Cambiario Estricto. |
 
 ---
 
-## 3. Estructura del Repositorio
+## 2. Estructura del Repositorio
 
-El repositorio ha sido curado para contener estrictamente los archivos esenciales requeridos para la evaluación técnica y financiera:
+El repositorio contiene estrictamente los archivos necesarios para la auditoría, reproducción y evaluación de la solución técnica:
 
 ```
 .
 ├── README.md                                  # Guía Maestra de Navegación y Mapeo contra la Prueba
 ├── TECHNICAL_MEMO_DATA_SCIENCE.md             # Documento Técnico Formal (Partes 1 a 5 para DS y C-Level)
 ├── presentacion_ejecutiva_tesoreria.pptx      # Presentación Ejecutiva a Tesorería (11 slides, sin fórmulas)
-├── solution_notebook.ipynb                    # Notebook Jupyter Ejecutable de Solución Completa
 │
 ├── accounts.csv                               # Catálogo maestro de cuentas y umbrales (Original Cobre)
 ├── account_balances_daily_RAW.csv             # Datos crudos de saldos diarios (Original Cobre)
@@ -52,14 +39,12 @@ El repositorio ha sido curado para contener estrictamente los archivos esenciale
 │
 ├── clean_data_pipeline.py                     # Parte 1: Pipeline de saneamiento forense y reconciliación
 ├── test_data_integrity.py                     # Parte 1: Suite pytest de aserción contable y contratos
-├── run_backtest_simulation.py                 # Parte 2 y 3: Simulación OOS de los 3 protocolos
-├── generate_treasury_executive_deck.py        # Generador automatizado de la presentación PowerPoint
+├── run_backtest_simulation.py                 # Parte 2 y 5: Simulación causal OOS de los 3 protocolos
 │
-├── flawed_model_squad_draft.ipynb             # Notebook inicial del squad entregado por Cobre
 ├── requirements.txt                           # Dependencias de Python reproducibles
 ├── Candidate Test - Technical Lead DS (Liquidity) EN.pdf # Enunciado oficial de la prueba técnica
 │
-└── presentation_assets/                       # Gráficos vectoriales de alta resolución (300 DPI)
+└── presentation_assets/                       # Gráficos de soporte en alta resolución (300 DPI)
     ├── chart_forensic_audit.png               # Auditoría forense y reconciliación contable
     ├── chart_flow_seasonality.png             # Estacionalidad semanal y picos de nómina
     ├── chart_feature_importance.png           # Explicabilidad económica de variables Ridge
@@ -70,9 +55,9 @@ El repositorio ha sido curado para contener estrictamente los archivos esenciale
 
 ---
 
-## 4. Guía de Ejecución Rápida y Reproducibilidad (Quickstart)
+## 3. Guía de Ejecución Rápida y Reproducibilidad (Quickstart)
 
-Todo el proyecto está diseñado para ejecutarse y verificarse en menos de un minuto:
+Todo el proyecto está diseñado para ejecutarse y verificarse de forma 100% reproducible mediante scripts `.py`:
 
 ### Paso 1: Clonar el repositorio e instalar dependencias
 ```bash
@@ -85,84 +70,19 @@ pip install -r requirements.txt
 ```bash
 python clean_data_pipeline.py
 ```
-*Salida esperada:* 100% de fechas recuperadas (293 días), deduplicación a 270 días continuos para las 6 cuentas, corrección del error 10x y residuo contable promedio de `0.00`.
+*Salida esperada:* Recuperación del 100% de las fechas (293 días crudos), deduplicación y alineación a 270 días continuos para las 6 cuentas (1,620 registros), corrección de los 4 signos invertidos y los 3 errores de escala decimal 10x, y verificación de residuo contable promedio de `0.00`.
 
-### Paso 3: Validar la suite de pruebas unitarias y contratos de datos (`pytest`)
+### Paso 3: Validar la suite de pruebas unitarias y contratos contables (`pytest`)
 ```bash
 pytest test_data_integrity.py
 ```
-*Salida esperada:* `6 passed in ~0.7s` (continuidad temporal, completitud sin nulos, no negatividad, consistencia de catálogo y cuadre contable).
+*Salida esperada:* `6 passed in ~0.7s` (continuidad temporal sin huecos, completitud sin nulos, no negatividad, integridad referencial y cuadre contable exacto).
 
-### Paso 4: Ejecutar la simulación de backtesting fuera de muestra (Partes 2 y 3)
+### Paso 4: Ejecutar la simulación de backtesting fuera de muestra (Partes 2 y 5)
 ```bash
 python run_backtest_simulation.py
 ```
 *Salida esperada:*
-* Inacción: 109 días en déficit | 0 transferencias | $0 fees.
-* Squad: 2 días en déficit | 97 transferencias | Descontrol operativo.
-* Propuesto: **0 días en déficit (100% SLA) | 3 transferencias | $50 USD + $20 MXN**.
-
-### Paso 5: Regenerar la Presentación Ejecutiva en PowerPoint
-```bash
-python generate_treasury_executive_deck.py
-```
-*Salida esperada:* Generación automática de `presentacion_ejecutiva_tesoreria.pptx` (11 diapositivas alineadas al memo, sin fórmulas complejas, sin Streamlit y con cero notas al orador).
-
----
-
-## 5. Scorecard Financiero Comparativo (Tabla Maestra de la Diapositiva 07)
-
-A continuación se presenta la tabla financiera que sintetiza los resultados de los tres modelos evaluados sobre los mismos 70 días de prueba fuera de muestra:
-
-| Dimensión Financiera y Operativa | 1. Inacción (Sin Fondeo) | 2. Squad Anterior (Heurística) | 3. Modelo Propuesto (Lead DS) | Impacto Financiero y Conclusión Técnica |
-| :--- | :---: | :---: | :---: | :--- |
-| **Días en Déficit (Quiebres)** | 109 días acumulados | 2 días en test (19 hist.) | **0 días (100.0% SLA)** | **Cero quiebres operativos.** Se eliminó el riesgo de bloqueo en dispersión de nóminas corporativas. |
-| **Transferencias Bancarias** | 0 órdenes | 97 órdenes (1.4 / día) | **3 órdenes (-96.9%)** | **Reducción del 96.9% en fricción bancaria:** de 1.4 órdenes diarias a solo un fondeo cada 23 días. |
-| **Costo Total en Fees Bancarios** | $0.00 | Descontrol de comisiones | **$50 USD + $20 MXN** | Solo 2 órdenes internacionales SWIFT ($25 c/u) y 1 orden local SPEI ($20 MXN). |
-| **Saldo Mín. Matriz (COP)** | $1,942.0M COP | Canibalizó ($1,695M COP) | **$1,942.0M COP (+94.2%)** | La cuenta nodriza jamás bajó de su piso ($1,000M). Margen de seguridad intacto (+94.2%). |
-| **Saldo Mín. en USD (Chase)** | $56.0k USD (Quiebre) | $99.4k USD (Quiebre) | **$104.7k USD (+4.7%)** | Cumplimiento estricto del umbral ($100k USD) durante todo el trimestre evaluado. |
-| **Saldo Mín. en MXN (BBVA)** | $15.4M MXN (Quiebre) | $39.98M MXN (Quiebre) | **$52.8M MXN (+32.0%)** | El colchón amortiguó 5 ciclos de nómina sin romper el umbral contractual ($40M MXN). |
-| **Preservación del Float (COP)** | $124.5M COP float | $111.5M COP float | **$124.5M COP (+12.97M COP)** | Superó al squad en +$12.97M COP en saldo promedio remunerado en la cuenta matriz en Colombia. |
-| **Descapitalización de Caja** | No aplica | Crítica (vació Bancolombia) | **0 eventos (Piso intacto)** | Protección patrimonial absoluta mediante la regla dura de solvencia del donante. |
-
----
-
-## 6. Arquitectura Productiva y Gobernanza de Riesgos (Parte 5)
-
-El diseño para producción trasciende el prototipo estático y contempla:
-1. **Contratos de Datos (`dbt tests`):** Aserción determinística de balance $|B_t - (B_{t-1} + I_t - O_t)| < 0.01$ y filtros estadísticos 5-sigma para aislar anomalías de escala o signo antes de alimentar la inferencia.
-2. **Orquestación en Airflow:** Ejecución diaria a las 06:00 UTC (01:00 AM COT / 00:00 AM CDMX), finalizando antes de la apertura de las cámaras de compensación (ACH 07:00 COT, SPEI 06:00 CDMX).
-3. **Observabilidad y Detección de Drift (MLOps):** Monitoreo diario del Population Stability Index ($	ext{PSI} < 0.10$) y test de Kolmogorov-Smirnov. Si $	ext{PSI} > 0.25$, el sistema conmuta automáticamente a modo defensivo.
-4. **4 Circuit Breakers Automáticos en Código:**
-   * *CB-1 (Integridad Contable):* Aborta si hay descalce de balance.
-   * *CB-2 (Solvencia Inviolable):* Bloquea la transferencia si la matriz (`ACC-001`) cae bajo $1,000M COP.
-   * *CB-3 (Techo de Exposición Diario):* Límite de movilización máxima del 15% del activo consolidado por jornada.
-   * *CB-4 (Aislamiento Cambiario):* Prohibición en código de fondeos cross-currency sin cobertura FX.
-5. **Esquema Champion-Challenger:** El modelo Ridge regularizado L2 opera como titular; modelos alternativos (ej. LightGBM con restricciones monótonas o ARIMAX) corren en sombra (*shadow deployment*) durante 60 días antes de considerar cualquier reemplazo.
-
----
-
-## 7. Formas de Trabajo con Inteligencia Artificial (Parte 4)
-
-* **Dónde SÍ se apalancó IA (~60% de ahorro de tiempo):**
-  * Generación acelerada de la suite de pruebas unitarias en `pytest` (`test_data_integrity.py`).
-  * Construcción de expresiones regulares complejas para normalización multiformato de fechas (`DD/MM/YYYY`, `YYYY-MM-DD`, `MM-DD-YYYY`).
-  * Scaffolding de código modular, tipado estricto y linters de análisis estático (PEP-8).
-  * Benchmarking ágil de literatura especializada en optimización estocástica de inventarios aplicada a tesorería (modelos $(s, S)$ de Arrow-Harris-Marschak).
-* **Dónde deliberadamente NO se utilizó IA (Juicio Humano Irreemplazable):**
-  * *Diagnóstico Forense Contable:* Las herramientas de LLM sugerían "imputar con la media" o "suavizar con splines", lo que habría ocultado el error decimal 10x y las 4 inversiones de signo. Solo el criterio analítico humano auditó el libro contable y rescató el 100% de la historia.
-  * *Causalidad Temporal y Latencia Bancaria ($T+L$):* Diseñar el orden temporal estricto sin filtración de futuro (*zero lookahead bias*) respetando los plazos de acreditación interbancarios.
-  * *Física de Tanque vs. Caudal:* Identificar que los saldos acumulan error y que el modelo predictivo debía descansar sobre flujos netos diarios estacionarios $I(0)$.
-  * *Arquitectura en Dos Capas:* Desacoplar la decisión de cuándo actuar (lead time) del tamaño de la recarga (amortiguador quincenal).
-  * *Gobernanza de Solvencia:* Conceptualización del piso de seguridad de la cuenta nodriza y los 4 Circuit Breakers institucionales.
-
----
-
-## 8. Conclusiones del Technical Lead
-
-1. **Rigor Estadístico y Contable:** La transición desde el modelado ingenuo de saldo hacia la predicción de flujos netos estacionarios regularizados con Ridge L2 proporciona una base matemática sólida, auditable y libre de derivas acumulativas.
-2. **Eficiencia Cuantificada:** La arquitectura de dos capas demostró en 70 días de backtesting fuera de muestra un desempeño impecable: **0 quiebres de liquidez (100% de SLA)** reduciendo en un **96.9% las transferencias bancarias** (de 97 a solo 3 órdenes) y preservando la rentabilidad de las reservas en COP.
-3. **Preparación para Producción:** El diseño integra contratos de datos rigurosos en dbt, observabilidad continua de drift con métricas KS y PSI, seguimiento continuo de precisión MAE, 4 circuit breakers automatizados y un esquema Champion-Challenger que posiciona a Cobre a la vanguardia de la tesorería algorítmica institucional en América Latina.
-
----
-*Para cualquier consulta técnica o financiera sobre la solución, contactar a Nicolás Méndez Gutiérrez.*
+* **Protocolo Inacción:** 109 días en déficit | 0 transferencias | $0.00 comisiones.
+* **Protocolo Squad:** 2 días en déficit | 97 transferencias | Drenaje caótico multimoneda.
+* **Protocolo Propuesto (Lead DS):** **0 días en déficit (100.0% SLA) | 3 transferencias | $50 USD + $20 MXN ($0 COP)**.
